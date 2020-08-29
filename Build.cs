@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Nuke.Common;
 using Nuke.Common.CI;
-using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -14,11 +13,6 @@ using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
-[GitHubActions(
-    "continuous",
-    GitHubActionsImage.WindowsLatest,
-    On = new[] { GitHubActionsTrigger.Push },
-    InvokedTargets = new[] { nameof(CompileAndAnalyze) })]
 partial class Build : NukeBuild
 {
     /// Support plugins are available for:
