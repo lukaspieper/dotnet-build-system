@@ -3,9 +3,8 @@ using System.Text.RegularExpressions;
 using System.Xml.Xsl;
 using Nuke.Common.Tooling;
 using static Nuke.Common.ControlFlow;
-using static Utilities.XmlTransformation;
 
-namespace BuildSteps
+namespace BuildSteps.CodeMetrics
 {
     public class CodeMetricsStep : BuildStep<CodeMetricsUserConfig>
     {
@@ -27,7 +26,7 @@ namespace BuildSteps
             var arguments = new XsltArgumentList();
             arguments.AddParam("maintainability_index_minimum", "", UserConfig.MaintainabilityIndexMinimum);
 
-            TransformXml(Config.XmlReportFile, Config.XsltFile, Config.HtmlReportFile, arguments);
+            TransformXmlReportToHtmlReport(arguments);
         }
 
         private void FailTargetOnTooLowMaintainability()

@@ -1,11 +1,18 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using BuildSteps;
+using BuildSteps.CodeMetrics;
+using BuildSteps.DotCover;
+using BuildSteps.JetBrainsDupFinder;
+using BuildSteps.ReSharperInspection;
+using BuildSteps.RoslynAnalyzers;
 using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.MSBuild;
 using Nuke.Common.Utilities.Collections;
@@ -25,6 +32,9 @@ partial class Build : NukeBuild
 
     public static int Main() => Execute<Build>(x => x.CompileAndAnalyze);
 
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
     [Solution] Solution Solution { get; }
 
     AbsolutePath BuildDirectory => RootDirectory / "build";
@@ -32,6 +42,8 @@ partial class Build : NukeBuild
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
     AbsolutePath AnalysisArtifactsDirectory => ArtifactsDirectory / "Analysis";
+
+    IReadOnlyCollection<Output> MsBuildOutput;
 
     [UsedImplicitly]
     Target OpenReport => _ => _
@@ -44,6 +56,18 @@ partial class Build : NukeBuild
             };
 
             Process.Start(processStartInfo);
+        });
+
+    Target CopyStaticArtifacts => _ => _
+        .After(Clean)
+        .Executes(() =>
+        {
+            EnsureExistingDirectory(ArtifactsDirectory);
+
+            CopyDirectoryRecursively(BuildDirectory / "StaticArtifacts",
+                ArtifactsDirectory,
+                DirectoryExistsPolicy.Merge,
+                FileExistsPolicy.OverwriteIfNewer);
         });
 
     Target Clean => _ => _
@@ -71,16 +95,16 @@ partial class Build : NukeBuild
                 .SetConfiguration(Configuration));
         });
 
-    Target CopyStaticArtifacts => _ => _
-        .After(Clean)
+    Target GetRoslynAnalyzersResults => _ => _
+        .DependsOn(Compile)
+        .DependsOn(CopyStaticArtifacts)
+        .ProceedAfterFailure()
         .Executes(() =>
         {
-            EnsureExistingDirectory(ArtifactsDirectory);
-
-            CopyDirectoryRecursively(BuildDirectory / "StaticArtifacts",
-                ArtifactsDirectory,
-                DirectoryExistsPolicy.Merge,
-                FileExistsPolicy.OverwriteIfNewer);
+            var userConfig = new RoslynAnalyzersUserConfig();
+            var xsltFile = XsltDirectory / "TransformRoslynAnalyzersResults.xslt";
+            var stepConfig = new BuildStepConfig<RoslynAnalyzersUserConfig>(userConfig, Solution, ArtifactsDirectory, xsltFile);
+            new RoslynAnalyzersStep(stepConfig, MsBuildOutput).Execute();
         });
 
     Target CalculateMetrics => _ => _
@@ -93,6 +117,39 @@ partial class Build : NukeBuild
             var xsltFile = XsltDirectory / "TransformCodeMetricsResults.xslt";
             var stepConfig = new BuildStepConfig<CodeMetricsUserConfig>(userConfig, Solution, ArtifactsDirectory, xsltFile);
             new CodeMetricsStep(stepConfig).Execute();
+        });
+
+    Target RunReSharperInspection => _ => _
+        .DependsOn(CopyStaticArtifacts)
+        .After(Compile)
+        .Executes(() =>
+        {
+            var userConfig = new ReSharperInspectionUserConfig();
+            var xsltFile = XsltDirectory / "TransformCodeInspectionResults.xslt";
+            var stepConfig = new BuildStepConfig<ReSharperInspectionUserConfig>(userConfig, Solution, ArtifactsDirectory, xsltFile);
+            new ReSharperInspectionStep(stepConfig).Execute();
+        });
+
+    Target FindDuplications => _ => _
+        .After(Compile)
+        .Executes(() =>
+        {
+            var userConfig = new JetBrainsDupFinderUserConfig();
+            var xsltFile = XsltDirectory / "TransformDupFinderResults.xslt";
+            var stepConfig = new BuildStepConfig<JetBrainsDupFinderUserConfig>(userConfig, Solution, ArtifactsDirectory, xsltFile);
+            new JetBrainsDupFinderStep(stepConfig).Execute();
+        });
+
+    Target RunTestsWithCoverage => _ => _
+        .DependsOn(CopyStaticArtifacts)
+        .After(Compile)
+        .ProceedAfterFailure()
+        .Executes(() =>
+        {
+            var userConfig = new DotCoverUserConfig();
+            var xsltFile = XsltDirectory / "TransformTrx.xslt";
+            var stepConfig = new BuildStepConfig<DotCoverUserConfig>(userConfig, Solution, ArtifactsDirectory, xsltFile);
+            new DotCoverStep(stepConfig, InvokedTargets.Contains(Restore), InvokedTargets.Contains(Compile)).Execute();
         });
 
     Target CompileAndAnalyze => _ => _

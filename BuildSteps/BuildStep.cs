@@ -1,4 +1,6 @@
-﻿using static Nuke.Common.IO.FileSystemTasks;
+﻿using System.Xml.Xsl;
+using static Nuke.Common.IO.FileSystemTasks;
+using static Utilities.XmlTransformation;
 
 namespace BuildSteps
 {
@@ -22,5 +24,10 @@ namespace BuildSteps
         }
 
         protected abstract void ExecuteStep();
+
+        protected void TransformXmlReportToHtmlReport(XsltArgumentList arguments = null)
+        {
+            TransformXml(Config.XmlReportFile, Config.XsltFile, Config.HtmlReportFile, arguments);
+        }
     }
 }
