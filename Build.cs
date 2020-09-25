@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using BuildSteps;
+using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
@@ -23,13 +25,15 @@ partial class Build : NukeBuild
 
     public static int Main() => Execute<Build>(x => x.CompileAndAnalyze);
 
-    [Solution] readonly Solution Solution;
+    [Solution] Solution Solution { get; }
 
     AbsolutePath BuildDirectory => RootDirectory / "build";
+    AbsolutePath XsltDirectory => BuildDirectory / "Xslt";
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
     AbsolutePath AnalysisArtifactsDirectory => ArtifactsDirectory / "Analysis";
 
+    [UsedImplicitly]
     Target OpenReport => _ => _
         .Executes(() =>
         {
@@ -77,6 +81,18 @@ partial class Build : NukeBuild
                 ArtifactsDirectory,
                 DirectoryExistsPolicy.Merge,
                 FileExistsPolicy.OverwriteIfNewer);
+        });
+
+    Target CalculateMetrics => _ => _
+        .DependsOn(CopyStaticArtifacts)
+        .After(Compile)
+        .ProceedAfterFailure()
+        .Executes(() =>
+        {
+            var userConfig = new CodeMetricsUserConfig();
+            var xsltFile = XsltDirectory / "TransformCodeMetricsResults.xslt";
+            var stepConfig = new BuildStepConfig<CodeMetricsUserConfig>(userConfig, Solution, ArtifactsDirectory, xsltFile);
+            new CodeMetricsStep(stepConfig).Execute();
         });
 
     Target CompileAndAnalyze => _ => _
