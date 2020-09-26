@@ -25,6 +25,7 @@ public partial class Build
     private Target GetRoslynAnalyzersResults => _ => _
         .DependsOn(Compile)
         .DependsOn(CopyStaticArtifacts)
+        .OnlyWhenStatic(() => BuildConfig.RoslynAnalyzersUserConfig.Enabled)
         .ProceedAfterFailure()
         .Executes(() =>
         {
@@ -36,6 +37,7 @@ public partial class Build
     private Target CalculateMetrics => _ => _
         .DependsOn(CopyStaticArtifacts)
         .After(Compile)
+        .OnlyWhenStatic(() => BuildConfig.CodeMetricsUserConfig.Enabled)
         .ProceedAfterFailure()
         .Executes(() =>
         {
@@ -47,6 +49,7 @@ public partial class Build
     private Target RunReSharperInspection => _ => _
         .DependsOn(CopyStaticArtifacts)
         .After(Compile)
+        .OnlyWhenStatic(() => BuildConfig.ReSharperInspectionUserConfig.Enabled)
         .Executes(() =>
         {
             var xsltFile = XsltDirectory / "TransformCodeInspectionResults.xslt";
@@ -56,6 +59,7 @@ public partial class Build
 
     private Target FindDuplications => _ => _
         .After(Compile)
+        .OnlyWhenStatic(() => BuildConfig.JetBrainsDupFinderUserConfig.Enabled)
         .Executes(() =>
         {
             var xsltFile = XsltDirectory / "TransformDupFinderResults.xslt";
@@ -66,6 +70,7 @@ public partial class Build
     private Target RunTestsWithCoverage => _ => _
         .DependsOn(CopyStaticArtifacts)
         .After(Compile)
+        .OnlyWhenStatic(() => BuildConfig.DotCoverUserConfig.Enabled)
         .ProceedAfterFailure()
         .Executes(() =>
         {

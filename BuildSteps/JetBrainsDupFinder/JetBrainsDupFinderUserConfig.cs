@@ -6,5 +6,7 @@ namespace BuildSteps.JetBrainsDupFinder
     {
         [JsonIgnore]
         public string StepName => "JetBrainsDupFinder";
+
+        public bool Enabled { get; set; } = true;
     }
 }

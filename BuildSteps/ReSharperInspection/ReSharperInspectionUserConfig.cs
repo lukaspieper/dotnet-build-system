@@ -6,5 +6,7 @@ namespace BuildSteps.ReSharperInspection
     {
         [JsonIgnore]
         public string StepName => "ReSharperInspection";
+
+        public bool Enabled { get; set; } = true;
     }
 }

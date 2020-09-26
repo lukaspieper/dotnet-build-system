@@ -8,6 +8,8 @@ namespace BuildSteps.DotCover
         [JsonIgnore]
         public string StepName => "DotNetTest";
 
+        public bool Enabled { get; set; } = true;
+
         /// <summary>
         ///     DotCover coverage filter (default: '+:module=*;class=*;function=*;-:module=xunit.assert;')
         /// </summary>
