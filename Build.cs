@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Nuke.Common;
-using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -15,31 +13,32 @@ using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 [UnsetVisualStudioEnvironmentVariables]
 partial class Build : NukeBuild
 {
-    /// Support plugins are available for:
-    ///   - JetBrains ReSharper        https://nuke.build/resharper
-    ///   - JetBrains Rider            https://nuke.build/rider
-    ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-    ///   - Microsoft VSCode           https://nuke.build/vscode
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    public static int Main() => Execute<Build>(x => x.CompileAndAnalyze);
+    [Solution] Solution Solution { get; }
 
-    [Solution] readonly Solution Solution;
+    BuildConfig BuildConfig { get; set; }
 
     AbsolutePath BuildDirectory => RootDirectory / "build";
+    AbsolutePath XsltDirectory => BuildDirectory / "Xslt";
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
-    AbsolutePath AnalysisArtifactsDirectory => ArtifactsDirectory / "Analysis";
 
-    Target OpenReport => _ => _
+    public static int Main() => Execute<Build>(build => build.CompileAndAnalyze);
+
+    protected override void OnBuildCreated() => BuildConfig = GetDeserializedBuildConfigOrDefault();
+
+    Target CopyStaticArtifacts => _ => _
+        .After(Clean)
         .Executes(() =>
         {
-            var processStartInfo = new ProcessStartInfo
-            {
-                FileName = ArtifactsDirectory / "Analysis.html",
-                UseShellExecute = true,
-            };
+            EnsureExistingDirectory(ArtifactsDirectory);
 
-            Process.Start(processStartInfo);
+            CopyDirectoryRecursively(BuildDirectory / "StaticArtifacts",
+                ArtifactsDirectory,
+                DirectoryExistsPolicy.Merge,
+                FileExistsPolicy.OverwriteIfNewer);
         });
 
     Target Clean => _ => _
@@ -66,25 +65,4 @@ partial class Build : NukeBuild
                 .SetTargetPath(Solution)
                 .SetConfiguration(Configuration));
         });
-
-    Target CopyStaticArtifacts => _ => _
-        .After(Clean)
-        .Executes(() =>
-        {
-            EnsureExistingDirectory(ArtifactsDirectory);
-
-            CopyDirectoryRecursively(BuildDirectory / "StaticArtifacts",
-                ArtifactsDirectory,
-                DirectoryExistsPolicy.Merge,
-                FileExistsPolicy.OverwriteIfNewer);
-        });
-
-    Target CompileAndAnalyze => _ => _
-        .Produces(ArtifactsDirectory)
-        .DependsOn(Compile)
-        .DependsOn(GetRoslynAnalyzersResults)
-        .DependsOn(CalculateMetrics)
-        .DependsOn(RunReSharperInspection)
-        .DependsOn(FindDuplications)
-        .DependsOn(RunTestsWithCoverage);
 }
