@@ -9,13 +9,13 @@ namespace BuildSteps.DotCover
 {
     public class DotCoverStep : BuildStep<DotCoverUserConfig>
     {
-        private readonly bool RunRestore;
-        private readonly bool RunBuild;
+        private readonly bool SkipRestore;
+        private readonly bool SkipBuild;
 
-        public DotCoverStep(BuildStepConfig<DotCoverUserConfig> config, bool runRestore, bool runBuild) : base(config)
+        public DotCoverStep(BuildStepConfig<DotCoverUserConfig> config, bool skipRestore, bool skipBuild) : base(config)
         {
-            RunRestore = runRestore;
-            RunBuild = runBuild;
+            SkipRestore = skipRestore;
+            SkipBuild = skipBuild;
         }
 
         protected override void ExecuteStep()
@@ -39,12 +39,12 @@ namespace BuildSteps.DotCover
             var arguments =
                 $"dotnet --output=DotCover.html --reportType=HTML --Filters={UserConfig.DotCoverCoverageFilter} -- test {Config.Solution} --logger \"trx;LogFileName={Config.XmlReportFile}\"";
 
-            if (RunRestore)
+            if (SkipRestore)
             {
                 arguments += " --no-restore";
             }
 
-            if (RunBuild)
+            if (SkipBuild)
             {
                 arguments += " --no-build";
             }
