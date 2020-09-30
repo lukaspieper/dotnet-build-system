@@ -7,6 +7,7 @@ using BuildSteps.ReSharperInspection;
 using BuildSteps.RoslynAnalyzers;
 using Nuke.Common;
 using Nuke.Common.CI;
+using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 
 public partial class Build
@@ -29,8 +30,7 @@ public partial class Build
         .ProceedAfterFailure()
         .Executes(() =>
         {
-            var xsltFile = XsltDirectory / "TransformRoslynAnalyzersResults.xslt";
-            var stepConfig = new BuildStepConfig<RoslynAnalyzersUserConfig>(BuildConfig.RoslynAnalyzersUserConfig, Solution, ArtifactsDirectory, xsltFile);
+            var stepConfig = CreateBuildStepConfig(BuildConfig.RoslynAnalyzersUserConfig, XsltDirectory / "TransformRoslynAnalyzersResults.xslt");
             new RoslynAnalyzersStep(stepConfig, MsBuildOutput).Execute();
         });
 
@@ -41,8 +41,7 @@ public partial class Build
         .ProceedAfterFailure()
         .Executes(() =>
         {
-            var xsltFile = XsltDirectory / "TransformCodeMetricsResults.xslt";
-            var stepConfig = new BuildStepConfig<CodeMetricsUserConfig>(BuildConfig.CodeMetricsUserConfig, Solution, ArtifactsDirectory, xsltFile);
+            var stepConfig = CreateBuildStepConfig(BuildConfig.CodeMetricsUserConfig, XsltDirectory / "TransformCodeMetricsResults.xslt");
             new CodeMetricsStep(stepConfig).Execute();
         });
 
@@ -52,8 +51,7 @@ public partial class Build
         .OnlyWhenStatic(() => BuildConfig.ReSharperInspectionUserConfig.Enabled)
         .Executes(() =>
         {
-            var xsltFile = XsltDirectory / "TransformCodeInspectionResults.xslt";
-            var stepConfig = new BuildStepConfig<ReSharperInspectionUserConfig>(BuildConfig.ReSharperInspectionUserConfig, Solution, ArtifactsDirectory, xsltFile);
+            var stepConfig = CreateBuildStepConfig(BuildConfig.ReSharperInspectionUserConfig, XsltDirectory / "TransformCodeInspectionResults.xslt");
             new ReSharperInspectionStep(stepConfig).Execute();
         });
 
@@ -62,8 +60,7 @@ public partial class Build
         .OnlyWhenStatic(() => BuildConfig.JetBrainsDupFinderUserConfig.Enabled)
         .Executes(() =>
         {
-            var xsltFile = XsltDirectory / "TransformDupFinderResults.xslt";
-            var stepConfig = new BuildStepConfig<JetBrainsDupFinderUserConfig>(BuildConfig.JetBrainsDupFinderUserConfig, Solution, ArtifactsDirectory, xsltFile);
+            var stepConfig = CreateBuildStepConfig(BuildConfig.JetBrainsDupFinderUserConfig, XsltDirectory / "TransformDupFinderResults.xslt");
             new JetBrainsDupFinderStep(stepConfig).Execute();
         });
 
@@ -74,8 +71,12 @@ public partial class Build
         .ProceedAfterFailure()
         .Executes(() =>
         {
-            var xsltFile = XsltDirectory / "TransformTrx.xslt";
-            var stepConfig = new BuildStepConfig<DotCoverUserConfig>(BuildConfig.DotCoverUserConfig, Solution, ArtifactsDirectory, xsltFile);
+            var stepConfig = CreateBuildStepConfig(BuildConfig.DotCoverUserConfig, XsltDirectory / "TransformTrx.xslt");
             new DotCoverStep(stepConfig, InvokedTargets.Contains(Restore), InvokedTargets.Contains(Compile)).Execute();
         });
+
+    private BuildStepConfig<T> CreateBuildStepConfig<T>(T userConfig, AbsolutePath xsltFile = null) where T : IBuildStepUserConfig
+    {
+        return new BuildStepConfig<T>(userConfig, Solution, ArtifactsDirectory, CacheDirectory, xsltFile);
+    }
 }
