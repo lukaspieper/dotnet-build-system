@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -22,5 +22,9 @@
 		<PackageReference Include="Nuke.Common" Version="0.24.11" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Metrics" Version="3.3.0" />
 	</ItemGroup>
+
+  <ItemGroup>
+    <NukeSpecificationFiles Include="DotCover.json" />
+  </ItemGroup>
 
 </Project>
