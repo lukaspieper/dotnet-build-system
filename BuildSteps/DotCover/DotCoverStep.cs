@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using Nuke.Common.Tools.DotCover;
+using Nuke.Common.Tooling;
+using static DotCoverTasks;
 using static Nuke.Common.ControlFlow;
 using static Nuke.Common.Logger;
 
@@ -22,8 +23,13 @@ namespace BuildSteps.DotCover
         {
             try
             {
-                var arguments = BuildDotCoverArguments();
-                DotCoverTasks.DotCover(arguments, Config.BuildStepArtifactsDirectory);
+                DotCoverCoverDotNet(_ => _
+                    .SetTargetArguments(BuildDotNetTestArguments())
+                    .SetReportType(DotCoverReportType.Html)
+                    .SetFilters(UserConfig.DotCoverCoverageFilter)
+                    .SetOutputFile("DotCover.html")
+                    .SetWorkingDirectory(Config.BuildStepArtifactsDirectory)
+                );
             }
             catch (Exception e)
             {
@@ -34,10 +40,9 @@ namespace BuildSteps.DotCover
             FailTargetOnFailingTest();
         }
 
-        private string BuildDotCoverArguments()
+        private string BuildDotNetTestArguments()
         {
-            var arguments =
-                $"dotnet --output=DotCover.html --reportType=HTML --Filters={UserConfig.DotCoverCoverageFilter} -- test {Config.Solution} --logger \"trx;LogFileName={Config.XmlReportFile}\"";
+            var arguments = $"test {Config.Solution} --logger \"trx;LogFileName={Config.XmlReportFile}\"";
 
             if (SkipRestore)
             {

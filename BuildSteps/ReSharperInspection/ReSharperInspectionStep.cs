@@ -17,6 +17,7 @@ namespace BuildSteps.ReSharperInspection
             InspectCode(_ => _
                 .SetTargetPath(Config.Solution)
                 .SetOutput(Config.XmlReportFile)
+                .SetCachesHome(Config.BuildStepCacheDirectory)
             );
 
             TransformXmlReportToHtmlReport();

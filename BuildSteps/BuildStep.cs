@@ -19,6 +19,7 @@ namespace BuildSteps
         {
             // Cleaning the build step specific directory allows running a step on its own without deleting other results.
             EnsureCleanDirectory(Config.BuildStepArtifactsDirectory);
+            EnsureCleanDirectory(Config.BuildStepCacheDirectory);
 
             ExecuteStep();
         }

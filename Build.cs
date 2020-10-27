@@ -24,6 +24,7 @@ partial class Build : NukeBuild
     AbsolutePath XsltDirectory => BuildDirectory / "Xslt";
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
+    AbsolutePath CacheDirectory => RootDirectory / ".cache";
 
     public static int Main() => Execute<Build>(build => build.CompileAndAnalyze);
 
@@ -46,7 +47,9 @@ partial class Build : NukeBuild
         .Executes(() =>
         {
             SourceDirectory.GlobDirectories("**/bin", "**/obj", "**/AppPackages").ForEach(DeleteDirectory);
+            
             EnsureCleanDirectory(ArtifactsDirectory);
+            EnsureCleanDirectory(CacheDirectory);
         });
 
     Target Restore => _ => _
