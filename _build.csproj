@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <NukeSpecificationFiles Include="DotCover.json" />
+    <NukeSpecificationFiles Include="CodeMetrics.json" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml.Xsl;
-using Nuke.Common.Tooling;
 using static Nuke.Common.ControlFlow;
 
 namespace BuildSteps.CodeMetrics
@@ -14,8 +13,10 @@ namespace BuildSteps.CodeMetrics
 
         protected override void ExecuteStep()
         {
-            var metrics = ToolResolver.GetPackageTool("Microsoft.CodeAnalysis.Metrics", "Metrics.exe");
-            metrics($"/SOLUTION:\"{Config.Solution}\" /OUT:\"{Config.XmlReportFile}\"");
+            CodeMetricsTasks.CodeMetrics(_ => _ 
+                .SetSolution(Config.Solution)
+                .SetOutputFile(Config.XmlReportFile)
+            );
 
             TransformMetricsResults();
             FailTargetOnTooLowMaintainability();
