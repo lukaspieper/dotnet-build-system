@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.RegularExpressions;
-using Nuke.Common.Tools.InspectCode;
+using Nuke.Common.Tooling;
+using Nuke.Common.Tools.ReSharper;
 using static Nuke.Common.Logger;
-using static Nuke.Common.Tools.InspectCode.InspectCodeTasks;
+using static Nuke.Common.Tools.ReSharper.ReSharperTasks;
 
 namespace BuildSteps.ReSharperInspection
 {
@@ -14,7 +16,11 @@ namespace BuildSteps.ReSharperInspection
 
         protected override void ExecuteStep()
         {
-            InspectCode(_ => _
+            // TODO: Workaround
+            var path = ToolPathResolver.GetPackageExecutable("JetBrains.ReSharper.GlobalTools", "JetBrains.CommandLine.Products.dll");
+            Environment.SetEnvironmentVariable("RESHARPER_EXE", path);
+
+            ReSharperInspectCode(_ => _
                 .SetTargetPath(Config.Solution)
                 .SetOutput(Config.XmlReportFile)
                 .SetCachesHome(Config.BuildStepCacheDirectory)

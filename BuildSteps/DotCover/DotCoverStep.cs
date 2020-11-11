@@ -28,7 +28,7 @@ namespace BuildSteps.DotCover
                     .SetReportType(DotCoverReportType.Html)
                     .SetFilters(UserConfig.DotCoverCoverageFilter)
                     .SetOutputFile("DotCover.html")
-                    .SetWorkingDirectory(Config.BuildStepArtifactsDirectory)
+                    .SetProcessWorkingDirectory(Config.BuildStepArtifactsDirectory)
                 );
             }
             catch (Exception e)

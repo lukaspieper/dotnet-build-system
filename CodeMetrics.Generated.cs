@@ -35,9 +35,9 @@ public static partial class CodeMetricsTasks
     ///   <p>Code metrics is a set of software measures that provide developers better insight into the code they are developing. By taking advantage of code metrics, developers can understand which types and/or methods should be reworked or more thoroughly tested. Development teams can identify potential risks, understand the current state of a project, and track progress during software development.</p>
     ///   <p>For more details, visit the <a href="https://www.nuget.org/packages/Microsoft.CodeAnalysis.Metrics/">official website</a>.</p>
     /// </summary>
-    public static IReadOnlyCollection<Output> CodeMetrics(string arguments, string workingDirectory = null, IReadOnlyDictionary<string, string> environmentVariables = null, int? timeout = null, bool? logOutput = null, bool? logInvocation = null, Func<string, string> outputFilter = null)
+    public static IReadOnlyCollection<Output> CodeMetrics(string arguments, string workingDirectory = null, IReadOnlyDictionary<string, string> environmentVariables = null, int? timeout = null, bool? logOutput = null, bool? logInvocation = null, bool? logTimestamp = null, string logFile = null, Func<string, string> outputFilter = null)
     {
-        var process = ProcessTasks.StartProcess(CodeMetricsPath, arguments, workingDirectory, environmentVariables, timeout, logOutput, logInvocation, CodeMetricsLogger, outputFilter);
+        using var process = ProcessTasks.StartProcess(CodeMetricsPath, arguments, workingDirectory, environmentVariables, timeout, logOutput, logInvocation, logTimestamp, logFile, CodeMetricsLogger, outputFilter);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -56,7 +56,7 @@ public static partial class CodeMetricsTasks
     public static IReadOnlyCollection<Output> CodeMetrics(CodeMetricsSettings toolSettings = null)
     {
         toolSettings = toolSettings ?? new CodeMetricsSettings();
-        var process = ProcessTasks.StartProcess(toolSettings);
+        using var process = ProcessTasks.StartProcess(toolSettings);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -105,8 +105,8 @@ public partial class CodeMetricsSettings : ToolSettings
     /// <summary>
     ///   Path to the CodeMetrics executable.
     /// </summary>
-    public override string ToolPath => base.ToolPath ?? CodeMetricsTasks.CodeMetricsPath;
-    public override Action<OutputType, string> CustomLogger => CodeMetricsTasks.CodeMetricsLogger;
+    public override string ProcessToolPath => base.ProcessToolPath ?? CodeMetricsTasks.CodeMetricsPath;
+    public override Action<OutputType, string> ProcessCustomLogger => CodeMetricsTasks.CodeMetricsLogger;
     /// <summary>
     ///   Project to analyze.
     /// </summary>
@@ -119,13 +119,13 @@ public partial class CodeMetricsSettings : ToolSettings
     ///   Metrics results XML output file.
     /// </summary>
     public virtual string OutputFile { get; internal set; }
-    protected override Arguments ConfigureArguments(Arguments arguments)
+    protected override Arguments ConfigureProcessArguments(Arguments arguments)
     {
         arguments
           .Add("/project:{value}", Project)
           .Add("/solution:{value}", Solution)
           .Add("/out:{value}", OutputFile);
-        return base.ConfigureArguments(arguments);
+        return base.ConfigureProcessArguments(arguments);
     }
 }
 #endregion
