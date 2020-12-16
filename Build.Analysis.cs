@@ -56,6 +56,7 @@ public partial class Build
         });
 
     private Target FindDuplications => _ => _
+        .DependsOn(CopyStaticArtifacts)
         .After(Compile)
         .OnlyWhenStatic(() => BuildConfig.JetBrainsDupFinderUserConfig.Enabled)
         .Executes(() =>
