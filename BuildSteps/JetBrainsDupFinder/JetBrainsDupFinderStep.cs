@@ -1,5 +1,7 @@
-﻿using Nuke.Common.Tools.DupFinder;
-using static Nuke.Common.Tools.DupFinder.DupFinderTasks;
+﻿using System;
+using Nuke.Common.Tooling;
+using Nuke.Common.Tools.ReSharper;
+using static Nuke.Common.Tools.ReSharper.ReSharperTasks;
 
 namespace BuildSteps.JetBrainsDupFinder
 {
@@ -11,7 +13,11 @@ namespace BuildSteps.JetBrainsDupFinder
 
         protected override void ExecuteStep()
         {
-            DupFinder(_ => _
+            // TODO: Workaround
+            var path = ToolPathResolver.GetPackageExecutable("JetBrains.ReSharper.GlobalTools", "dupfinder.exe");
+            Environment.SetEnvironmentVariable("RESHARPER_EXE", path);
+
+            ReSharperDupFinder(_ => _
                 .SetSource(Config.Solution)
                 .SetOutputFile(Config.XmlReportFile)
             );

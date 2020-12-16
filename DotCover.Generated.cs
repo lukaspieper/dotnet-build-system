@@ -35,9 +35,9 @@ public static partial class DotCoverTasks
     ///   <p>dotCover is a .NET unit testing and code coverage tool that works right in Visual Studio, helps you know to what extent your code is covered with unit tests, provides great ways to visualize code coverage, and is Continuous Integration ready. dotCover calculates and reports statement-level code coverage in applications targeting .NET Framework, Silverlight, and .NET Core.</p>
     ///   <p>For more details, visit the <a href="https://www.jetbrains.com/dotcover">official website</a>.</p>
     /// </summary>
-    public static IReadOnlyCollection<Output> DotCover(string arguments, string workingDirectory = null, IReadOnlyDictionary<string, string> environmentVariables = null, int? timeout = null, bool? logOutput = null, bool? logInvocation = null, Func<string, string> outputFilter = null)
+    public static IReadOnlyCollection<Output> DotCover(string arguments, string workingDirectory = null, IReadOnlyDictionary<string, string> environmentVariables = null, int? timeout = null, bool? logOutput = null, bool? logInvocation = null, bool? logTimestamp = null, string logFile = null, Func<string, string> outputFilter = null)
     {
-        var process = ProcessTasks.StartProcess(DotCoverPath, arguments, workingDirectory, environmentVariables, timeout, logOutput, logInvocation, DotCoverLogger, outputFilter);
+        using var process = ProcessTasks.StartProcess(DotCoverPath, arguments, workingDirectory, environmentVariables, timeout, logOutput, logInvocation, logTimestamp, logFile, DotCoverLogger, outputFilter);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -72,7 +72,7 @@ public static partial class DotCoverTasks
     public static IReadOnlyCollection<Output> DotCoverAnalyse(DotCoverAnalyseSettings toolSettings = null)
     {
         toolSettings = toolSettings ?? new DotCoverAnalyseSettings();
-        var process = ProcessTasks.StartProcess(toolSettings);
+        using var process = ProcessTasks.StartProcess(toolSettings);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -170,7 +170,7 @@ public static partial class DotCoverTasks
     public static IReadOnlyCollection<Output> DotCoverCover(DotCoverCoverSettings toolSettings = null)
     {
         toolSettings = toolSettings ?? new DotCoverCoverSettings();
-        var process = ProcessTasks.StartProcess(toolSettings);
+        using var process = ProcessTasks.StartProcess(toolSettings);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -265,7 +265,7 @@ public static partial class DotCoverTasks
     public static IReadOnlyCollection<Output> DotCoverCoverDotNet(DotCoverCoverDotNetSettings toolSettings = null)
     {
         toolSettings = toolSettings ?? new DotCoverCoverDotNetSettings();
-        var process = ProcessTasks.StartProcess(toolSettings);
+        using var process = ProcessTasks.StartProcess(toolSettings);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -344,7 +344,7 @@ public static partial class DotCoverTasks
     public static IReadOnlyCollection<Output> DotCoverDelete(DotCoverDeleteSettings toolSettings = null)
     {
         toolSettings = toolSettings ?? new DotCoverDeleteSettings();
-        var process = ProcessTasks.StartProcess(toolSettings);
+        using var process = ProcessTasks.StartProcess(toolSettings);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -397,7 +397,7 @@ public static partial class DotCoverTasks
     public static IReadOnlyCollection<Output> DotCoverMerge(DotCoverMergeSettings toolSettings = null)
     {
         toolSettings = toolSettings ?? new DotCoverMergeSettings();
-        var process = ProcessTasks.StartProcess(toolSettings);
+        using var process = ProcessTasks.StartProcess(toolSettings);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -455,7 +455,7 @@ public static partial class DotCoverTasks
     public static IReadOnlyCollection<Output> DotCoverReport(DotCoverReportSettings toolSettings = null)
     {
         toolSettings = toolSettings ?? new DotCoverReportSettings();
-        var process = ProcessTasks.StartProcess(toolSettings);
+        using var process = ProcessTasks.StartProcess(toolSettings);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -513,7 +513,7 @@ public static partial class DotCoverTasks
     public static IReadOnlyCollection<Output> DotCoverZip(DotCoverZipSettings toolSettings = null)
     {
         toolSettings = toolSettings ?? new DotCoverZipSettings();
-        var process = ProcessTasks.StartProcess(toolSettings);
+        using var process = ProcessTasks.StartProcess(toolSettings);
         process.AssertZeroExitCode();
         return process.Output;
     }
@@ -564,8 +564,8 @@ public partial class DotCoverAnalyseSettings : ToolSettings
     /// <summary>
     ///   Path to the DotCover executable.
     /// </summary>
-    public override string ToolPath => base.ToolPath ?? DotCoverTasks.DotCoverPath;
-    public override Action<OutputType, string> CustomLogger => DotCoverTasks.DotCoverLogger;
+    public override string ProcessToolPath => base.ProcessToolPath ?? DotCoverTasks.DotCoverPath;
+    public override Action<OutputType, string> ProcessCustomLogger => DotCoverTasks.DotCoverLogger;
     /// <summary>
     ///   File name of the program to analyse.
     /// </summary>
@@ -644,7 +644,7 @@ public partial class DotCoverAnalyseSettings : ToolSettings
     ///   Enables logging and specifies log file name.
     /// </summary>
     public virtual string LogFile { get; internal set; }
-    protected override Arguments ConfigureArguments(Arguments arguments)
+    protected override Arguments ConfigureProcessArguments(Arguments arguments)
     {
         arguments
           .Add("analyse")
@@ -667,7 +667,7 @@ public partial class DotCoverAnalyseSettings : ToolSettings
           .Add("--ReturnTargetExitCode", ReturnTargetExitCode)
           .Add("--ProcessFilters={value}", ProcessFilters, separator: ';')
           .Add("--LogFile={value}", LogFile);
-        return base.ConfigureArguments(arguments);
+        return base.ConfigureProcessArguments(arguments);
     }
 }
 #endregion
@@ -683,8 +683,8 @@ public partial class DotCoverCoverSettings : ToolSettings
     /// <summary>
     ///   Path to the DotCover executable.
     /// </summary>
-    public override string ToolPath => base.ToolPath ?? DotCoverTasks.DotCoverPath;
-    public override Action<OutputType, string> CustomLogger => DotCoverTasks.DotCoverLogger;
+    public override string ProcessToolPath => base.ProcessToolPath ?? DotCoverTasks.DotCoverPath;
+    public override Action<OutputType, string> ProcessCustomLogger => DotCoverTasks.DotCoverLogger;
     /// <summary>
     ///   File name of the program to analyse.
     /// </summary>
@@ -759,7 +759,7 @@ public partial class DotCoverCoverSettings : ToolSettings
     ///   Enables logging and specifies log file name.
     /// </summary>
     public virtual string LogFile { get; internal set; }
-    protected override Arguments ConfigureArguments(Arguments arguments)
+    protected override Arguments ConfigureProcessArguments(Arguments arguments)
     {
         arguments
           .Add("cover")
@@ -781,7 +781,7 @@ public partial class DotCoverCoverSettings : ToolSettings
           .Add("--ReturnTargetExitCode", ReturnTargetExitCode)
           .Add("--ProcessFilters={value}", ProcessFilters, separator: ';')
           .Add("--LogFile={value}", LogFile);
-        return base.ConfigureArguments(arguments);
+        return base.ConfigureProcessArguments(arguments);
     }
 }
 #endregion
@@ -797,8 +797,8 @@ public partial class DotCoverCoverDotNetSettings : ToolSettings
     /// <summary>
     ///   Path to the DotCover executable.
     /// </summary>
-    public override string ToolPath => base.ToolPath ?? DotCoverTasks.DotCoverPath;
-    public override Action<OutputType, string> CustomLogger => DotCoverTasks.DotCoverLogger;
+    public override string ProcessToolPath => base.ProcessToolPath ?? DotCoverTasks.DotCoverPath;
+    public override Action<OutputType, string> ProcessCustomLogger => DotCoverTasks.DotCoverLogger;
     public virtual string Configuration { get; internal set; }
     /// <summary>
     ///   Path to the resulting coverage snapshot.
@@ -869,7 +869,7 @@ public partial class DotCoverCoverDotNetSettings : ToolSettings
     ///   Enables logging and specifies log file name.
     /// </summary>
     public virtual string LogFile { get; internal set; }
-    protected override Arguments ConfigureArguments(Arguments arguments)
+    protected override Arguments ConfigureProcessArguments(Arguments arguments)
     {
         arguments
           .Add("dotnet")
@@ -890,7 +890,7 @@ public partial class DotCoverCoverDotNetSettings : ToolSettings
           .Add("--ReturnTargetExitCode", ReturnTargetExitCode)
           .Add("--ProcessFilters={value}", ProcessFilters, separator: ';')
           .Add("--LogFile={value}", LogFile);
-        return base.ConfigureArguments(arguments);
+        return base.ConfigureProcessArguments(arguments);
     }
 }
 #endregion
@@ -906,8 +906,8 @@ public partial class DotCoverDeleteSettings : ToolSettings
     /// <summary>
     ///   Path to the DotCover executable.
     /// </summary>
-    public override string ToolPath => base.ToolPath ?? DotCoverTasks.DotCoverPath;
-    public override Action<OutputType, string> CustomLogger => DotCoverTasks.DotCoverLogger;
+    public override string ProcessToolPath => base.ProcessToolPath ?? DotCoverTasks.DotCoverPath;
+    public override Action<OutputType, string> ProcessCustomLogger => DotCoverTasks.DotCoverLogger;
     public virtual string Configuration { get; internal set; }
     /// <summary>
     ///   List of snapshot files.
@@ -918,14 +918,14 @@ public partial class DotCoverDeleteSettings : ToolSettings
     ///   Enables logging and specifies log file name.
     /// </summary>
     public virtual string LogFile { get; internal set; }
-    protected override Arguments ConfigureArguments(Arguments arguments)
+    protected override Arguments ConfigureProcessArguments(Arguments arguments)
     {
         arguments
           .Add("delete")
           .Add("{value}", Configuration)
           .Add("--Source={value}", Source, separator: ';')
           .Add("--LogFile={value}", LogFile);
-        return base.ConfigureArguments(arguments);
+        return base.ConfigureProcessArguments(arguments);
     }
 }
 #endregion
@@ -941,8 +941,8 @@ public partial class DotCoverMergeSettings : ToolSettings
     /// <summary>
     ///   Path to the DotCover executable.
     /// </summary>
-    public override string ToolPath => base.ToolPath ?? DotCoverTasks.DotCoverPath;
-    public override Action<OutputType, string> CustomLogger => DotCoverTasks.DotCoverLogger;
+    public override string ProcessToolPath => base.ProcessToolPath ?? DotCoverTasks.DotCoverPath;
+    public override Action<OutputType, string> ProcessCustomLogger => DotCoverTasks.DotCoverLogger;
     public virtual string Configuration { get; internal set; }
     /// <summary>
     ///   List of snapshot files.
@@ -961,7 +961,7 @@ public partial class DotCoverMergeSettings : ToolSettings
     ///   Enables logging and specifies log file name.
     /// </summary>
     public virtual string LogFile { get; internal set; }
-    protected override Arguments ConfigureArguments(Arguments arguments)
+    protected override Arguments ConfigureProcessArguments(Arguments arguments)
     {
         arguments
           .Add("merge")
@@ -970,7 +970,7 @@ public partial class DotCoverMergeSettings : ToolSettings
           .Add("--Output={value}", OutputFile)
           .Add("--TempDir={value}", TempDirectory)
           .Add("--LogFile={value}", LogFile);
-        return base.ConfigureArguments(arguments);
+        return base.ConfigureProcessArguments(arguments);
     }
 }
 #endregion
@@ -986,8 +986,8 @@ public partial class DotCoverReportSettings : ToolSettings
     /// <summary>
     ///   Path to the DotCover executable.
     /// </summary>
-    public override string ToolPath => base.ToolPath ?? DotCoverTasks.DotCoverPath;
-    public override Action<OutputType, string> CustomLogger => DotCoverTasks.DotCoverLogger;
+    public override string ProcessToolPath => base.ProcessToolPath ?? DotCoverTasks.DotCoverPath;
+    public override Action<OutputType, string> ProcessCustomLogger => DotCoverTasks.DotCoverLogger;
     public virtual string Configuration { get; internal set; }
     /// <summary>
     ///   List of snapshot files.
@@ -1010,7 +1010,7 @@ public partial class DotCoverReportSettings : ToolSettings
     ///   Enables logging and specifies log file name.
     /// </summary>
     public virtual string LogFile { get; internal set; }
-    protected override Arguments ConfigureArguments(Arguments arguments)
+    protected override Arguments ConfigureProcessArguments(Arguments arguments)
     {
         arguments
           .Add("report")
@@ -1020,7 +1020,7 @@ public partial class DotCoverReportSettings : ToolSettings
           .Add("--ReportType={value}", ReportType)
           .Add("--HideAutoProperties", HideAutoProperties)
           .Add("--LogFile={value}", LogFile);
-        return base.ConfigureArguments(arguments);
+        return base.ConfigureProcessArguments(arguments);
     }
 }
 #endregion
@@ -1036,8 +1036,8 @@ public partial class DotCoverZipSettings : ToolSettings
     /// <summary>
     ///   Path to the DotCover executable.
     /// </summary>
-    public override string ToolPath => base.ToolPath ?? DotCoverTasks.DotCoverPath;
-    public override Action<OutputType, string> CustomLogger => DotCoverTasks.DotCoverLogger;
+    public override string ProcessToolPath => base.ProcessToolPath ?? DotCoverTasks.DotCoverPath;
+    public override Action<OutputType, string> ProcessCustomLogger => DotCoverTasks.DotCoverLogger;
     public virtual string Configuration { get; internal set; }
     /// <summary>
     ///   Coverage snapshot file name.
@@ -1051,7 +1051,7 @@ public partial class DotCoverZipSettings : ToolSettings
     ///   Enables logging and specifies log file name.
     /// </summary>
     public virtual string LogFile { get; internal set; }
-    protected override Arguments ConfigureArguments(Arguments arguments)
+    protected override Arguments ConfigureProcessArguments(Arguments arguments)
     {
         arguments
           .Add("zip")
@@ -1059,7 +1059,7 @@ public partial class DotCoverZipSettings : ToolSettings
           .Add("--Source={value}", Source)
           .Add("--Output={value}", OutputFile)
           .Add("--LogFile={value}", LogFile);
-        return base.ConfigureArguments(arguments);
+        return base.ConfigureProcessArguments(arguments);
     }
 }
 #endregion

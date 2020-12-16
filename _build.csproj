@@ -1,30 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
-		<RootNamespace></RootNamespace>
-		<NoWarn>CS0649;CS0169</NoWarn>
-		<NukeRootDirectory>..</NukeRootDirectory>
-		<NukeScriptDirectory>..</NukeScriptDirectory>
-	</PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace></RootNamespace>
+    <NoWarn>CS0649;CS0169</NoWarn>
 
-	<ItemGroup>
-		<PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-		<PackageReference Include="JetBrains.dotCover.CommandLineTools" Version="2020.2.4">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="JetBrains.ReSharper.CommandLineTools" Version="2020.1.3">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Nuke.Common" Version="0.24.11" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Metrics" Version="3.3.0" />
-	</ItemGroup>
+    <NukeRootDirectory>..</NukeRootDirectory>
+    <NukeScriptDirectory>..</NukeScriptDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
+    <PackageReference Include="Nuke.Common" Version="0.25.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageDownload Include="JetBrains.dotCover.DotNetCliTool" Version="[2020.3.0]" />
+    <PackageDownload Include="JetBrains.resharper.globaltools" Version="[2020.3.0]" />
+    <PackageDownload Include="Microsoft.CodeAnalysis.Metrics" Version="[3.3.0]" />
+  </ItemGroup>
 
   <ItemGroup>
     <NukeSpecificationFiles Include="DotCover.json" />
+    <NukeSpecificationFiles Include="CodeMetrics.json" />
   </ItemGroup>
 
 </Project>
