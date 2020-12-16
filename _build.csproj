@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageDownload Include="JetBrains.dotCover.DotNetCliTool" Version="[2020.2.4]" />
-    <PackageDownload Include="JetBrains.resharper.globaltools" Version="[2020.2.4]" />
+    <PackageDownload Include="JetBrains.dotCover.DotNetCliTool" Version="[2020.3.0]" />
+    <PackageDownload Include="JetBrains.resharper.globaltools" Version="[2020.3.0]" />
     <PackageDownload Include="Microsoft.CodeAnalysis.Metrics" Version="[3.3.0]" />
   </ItemGroup>
 
