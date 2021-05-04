@@ -1,11 +1,27 @@
-## dotNet Build System
+# .NET Build System
 
-This is my build system for dotNet projects. It is based on [Nuke.Build](https://github.com/nuke-build/nuke).
+This repository contains my personal build system for .NET (Core) projects. Currently, the primary goal is to ensure good code quality and consistent formatting. The results of the code analysis are output in a simple HTML report. This project uses [Nuke.build](https://github.com/nuke-build/nuke) as foundation.
 
-### Included steps for static code analysis
+## Included build steps for static code analysis
 
-* Roslyn analyzers like [FxCop](https://www.nuget.org/packages/Microsoft.CodeAnalysis.FxCopAnalyzers/) and [StyleCop](https://www.nuget.org/packages/StyleCop.Analyzers/)
+* Roslyn analyzers like [.NET analyzers](https://www.nuget.org/packages/Microsoft.CodeAnalysis.NetAnalyzers/) and [StyleCop analyzers](https://www.nuget.org/packages/StyleCop.Analyzers/)
 * [CodeMetrics](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Metrics/)
-* [ReSharper Inspection](https://www.nuget.org/packages/JetBrains.ReSharper.CommandLineTools/)
-* [JetBrains DupFinder](https://www.nuget.org/packages/JetBrains.ReSharper.CommandLineTools/)
-* [JetBrains DotCover](https://www.nuget.org/packages/JetBrains.dotCover.CommandLineTools/)
+* [ReSharper Inspection](https://www.nuget.org/packages/JetBrains.ReSharper.GlobalTools/)
+* [ReSharper DupFinder](https://www.nuget.org/packages/JetBrains.ReSharper.GlobalTools/)
+* [DotCover](https://www.nuget.org/packages/JetBrains.dotCover.DotNetCliTool/)
+
+Each build step can be disabled or configured through a JSON file.
+
+## Setup
+
+For now the build system is installed as a git submodule.
+
+```
+git submodule add -b master https://github.com/lukaspieper/dotnet-build-system.git build
+```
+
+## Usage
+
+```
+dotnet run --project ./build/_build.csproj
+```
