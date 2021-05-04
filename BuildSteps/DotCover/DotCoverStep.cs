@@ -2,9 +2,10 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Nuke.Common.Tooling;
-using static DotCoverTasks;
+using Nuke.Common.Tools.DotCover;
 using static Nuke.Common.ControlFlow;
 using static Nuke.Common.Logger;
+using static Nuke.Common.Tools.DotCover.DotCoverTasks;
 
 namespace BuildSteps.DotCover
 {
