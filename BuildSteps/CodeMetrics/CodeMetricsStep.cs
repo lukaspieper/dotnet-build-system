@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml.Xsl;
+using Nuke.Common.Tools.CodeMetrics;
 using static Nuke.Common.ControlFlow;
 
 namespace BuildSteps.CodeMetrics

@@ -21,9 +21,4 @@
     <PackageDownload Include="Microsoft.CodeAnalysis.Metrics" Version="[3.3.0]" />
   </ItemGroup>
 
-  <ItemGroup>
-    <NukeSpecificationFiles Include="DotCover.json" />
-    <NukeSpecificationFiles Include="CodeMetrics.json" />
-  </ItemGroup>
-
 </Project>
