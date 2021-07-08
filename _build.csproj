@@ -12,18 +12,13 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
-    <PackageReference Include="Nuke.Common" Version="5.0.2" />
+    <PackageReference Include="Nuke.Common" Version="5.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageDownload Include="JetBrains.dotCover.DotNetCliTool" Version="[2021.1.2]" />
     <PackageDownload Include="JetBrains.resharper.globaltools" Version="[2021.1.2]" />
     <PackageDownload Include="Microsoft.CodeAnalysis.Metrics" Version="[3.3.0]" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <NukeSpecificationFiles Include="DotCover.json" />
-    <NukeSpecificationFiles Include="CodeMetrics.json" />
   </ItemGroup>
 
 </Project>
