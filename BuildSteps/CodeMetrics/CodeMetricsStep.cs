@@ -1,7 +1,11 @@
 ﻿using Nuke.Common.Tools.CodeMetrics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Xsl;
+using Nuke.Common;
+using Nuke.Common.IO;
+using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.ControlFlow;
 
 namespace BuildSteps.CodeMetrics
@@ -14,6 +18,14 @@ namespace BuildSteps.CodeMetrics
 
         protected override void ExecuteStep()
         {
+            // Without the environmental variable CodeMetrics will not provide any results
+            var outputLines = DotNetTasks.DotNet("--info", logOutput: false);
+            var basePathOutput = outputLines.Single(line => line.Text.Contains("Base Path:")).Text;
+            var basePath = (AbsolutePath)basePathOutput.Substring(basePathOutput.IndexOf(':') + 1).Trim();
+            
+            Logger.Info($"SDK base path: {basePath}");
+            EnvironmentInfo.SetVariable("MSBuildSDKsPath", basePath / "Sdks");
+
             CodeMetricsTasks.CodeMetrics(_ => _ 
                 .SetSolution(Config.Solution)
                 .SetOutputFile(Config.XmlReportFile)
