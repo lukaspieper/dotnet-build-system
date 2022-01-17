@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BuildSteps.ReSharperInspection
+namespace Components.Analyzer.ReSharper
 {
-    public class ReSharperInspectionUserConfig : IBuildStepUserConfig
+    public class ReSharperInspectionUserConfig : IUserConfig
     {
         [JsonIgnore]
         public string StepName => "ReSharperInspection";

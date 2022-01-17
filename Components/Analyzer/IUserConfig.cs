@@ -1,6 +1,6 @@
-﻿namespace BuildSteps
+﻿namespace Components.Analyzer
 {
-    public interface IBuildStepUserConfig
+    public interface IUserConfig
     {
         public string StepName { get; }
 

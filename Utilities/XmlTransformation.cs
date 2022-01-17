@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Xml.Xsl;
 using Nuke.Common.IO;
-using static Nuke.Common.Logger;
 
 namespace Utilities
 {

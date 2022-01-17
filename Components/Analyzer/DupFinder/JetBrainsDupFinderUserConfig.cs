@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BuildSteps.JetBrainsDupFinder
+namespace Components.Analyzer.DupFinder
 {
-    public class JetBrainsDupFinderUserConfig : IBuildStepUserConfig
+    public class JetBrainsDupFinderUserConfig : IUserConfig
     {
         [JsonIgnore]
         public string StepName => "JetBrainsDupFinder";

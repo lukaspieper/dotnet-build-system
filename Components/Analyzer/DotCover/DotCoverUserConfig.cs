@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BuildSteps.DotCover
+namespace Components.Analyzer.DotCover
 {
-    public class DotCoverUserConfig : IBuildStepUserConfig
+    public class DotCoverUserConfig : IUserConfig
     {
         // Avoids a naming conflict between the test report and the coverage report.
         [JsonIgnore]
