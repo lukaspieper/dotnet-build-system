@@ -4,7 +4,6 @@ using Components;
 using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.Execution;
-using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Components;
 
@@ -14,7 +13,6 @@ partial class Build : NukeBuild, IRebuild, IClean, ICopyStaticArtifacts, IHazBui
 {
     public IReadOnlyCollection<Output> MsBuildOutput { get; set; }
     public BuildConfig BuildConfig { get; set; }
-    public AbsolutePath XsltDirectory => (this as IHazBuildDirectory).BuildDirectory / "Xslt";
 
     public static int Main()
     {
@@ -23,9 +21,9 @@ partial class Build : NukeBuild, IRebuild, IClean, ICopyStaticArtifacts, IHazBui
 
     protected override void OnBuildCreated()
     {
-        BuildConfig = (this as IHazBuildConfig).GetDeserializedBuildConfigOrDefault();
+        (this as IHazBuildConfig).OnBuildCreated();
     }
-    
+
     [UsedImplicitly]
     public Target OpenReport => _ => _
         .Executes(() =>

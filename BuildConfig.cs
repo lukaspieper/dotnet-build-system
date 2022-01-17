@@ -1,8 +1,8 @@
-﻿using BuildSteps.CodeMetrics;
-using BuildSteps.DotCover;
+﻿using BuildSteps.DotCover;
 using BuildSteps.JetBrainsDupFinder;
 using BuildSteps.ReSharperInspection;
 using BuildSteps.RoslynAnalyzers;
+using Components.Analyzer.CodeMetrics;
 
 public class BuildConfig
 {

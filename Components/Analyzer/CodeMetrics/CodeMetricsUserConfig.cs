@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
+using BuildSteps;
 
-namespace BuildSteps.CodeMetrics
+namespace Components.Analyzer.CodeMetrics
 {
     public class CodeMetricsUserConfig : IBuildStepUserConfig
     {
