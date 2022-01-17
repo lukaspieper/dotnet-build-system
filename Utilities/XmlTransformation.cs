@@ -9,7 +9,7 @@ namespace Utilities
     {
         internal static void TransformXml(AbsolutePath sourceXmlPath, AbsolutePath xsltPath, AbsolutePath outputFilePath, XsltArgumentList arguments = null)
         {
-            Normal($"Transforming with '{xsltPath}'.");
+            Serilog.Log.Information($"Transforming with '{xsltPath}'.");
 
             var transformation = new XslCompiledTransform();
             transformation.Load(xsltPath);
@@ -19,7 +19,7 @@ namespace Utilities
                 transformation.Transform(sourceXmlPath, arguments, streamWriter);
             }
 
-            Normal($"Transformation completed. Output file: '{outputFilePath}'.");
+            Serilog.Log.Information($"Transformation completed. Output file: '{outputFilePath}'.");
         }
     }
 }

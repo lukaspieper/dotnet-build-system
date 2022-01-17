@@ -6,7 +6,7 @@ using System.Xml.Xsl;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tools.DotNet;
-using static Nuke.Common.ControlFlow;
+using static Nuke.Common.Assert;
 
 namespace BuildSteps.CodeMetrics
 {
@@ -23,7 +23,7 @@ namespace BuildSteps.CodeMetrics
             var basePathOutput = outputLines.Single(line => line.Text.Contains("Base Path:")).Text;
             var basePath = (AbsolutePath)basePathOutput.Substring(basePathOutput.IndexOf(':') + 1).Trim();
             
-            Logger.Info($"SDK base path: {basePath}");
+            Serilog.Log.Information($"SDK base path: {basePath}");
             EnvironmentInfo.SetVariable("MSBuildSDKsPath", basePath / "Sdks");
 
             CodeMetricsTasks.CodeMetrics(_ => _ 
