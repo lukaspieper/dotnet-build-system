@@ -3,8 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotCover;
-using static Nuke.Common.ControlFlow;
-using static Nuke.Common.Logger;
+using static Nuke.Common.Assert;
 using static Nuke.Common.Tools.DotCover.DotCoverTasks;
 
 namespace BuildSteps.DotCover
@@ -34,7 +33,7 @@ namespace BuildSteps.DotCover
             }
             catch (Exception e)
             {
-                Warn(e);
+                Serilog.Log.Warning(e.ToString());
             }
 
             TransformXmlReportToHtmlReport();

@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using Nuke.Common.Tooling;
-using static Nuke.Common.ControlFlow;
-using static Nuke.Common.Logger;
+using static Nuke.Common.Assert;
 
 namespace BuildSteps.RoslynAnalyzers
 {
@@ -32,7 +31,7 @@ namespace BuildSteps.RoslynAnalyzers
             }
             else if (analyzerResults.Count > 0)
             {
-                Warn($"RoslynAnalyzers found {analyzerResults.Count} warnings.");
+                Serilog.Log.Warning($"RoslynAnalyzers found {analyzerResults.Count} warnings.");
             }
         }
 

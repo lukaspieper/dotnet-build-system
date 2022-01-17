@@ -31,13 +31,13 @@ namespace BuildSteps.ReSharperInspection
             var numberOfWarnings = Regex.Matches(htmlOutput, "WARNING").Count;
             if (numberOfWarnings > 0)
             {
-                Warn($"ReSharper Code Inspection found {numberOfWarnings} warnings.");
+                Serilog.Log.Warning($"ReSharper Code Inspection found {numberOfWarnings} warnings.");
             }
 
             var numberOfSuggestions = Regex.Matches(htmlOutput, "SUGGESTION").Count;
             if (numberOfSuggestions > 0)
             {
-                Warn($"ReSharper Code Inspection found {numberOfSuggestions} suggestions.");
+                Serilog.Log.Warning($"ReSharper Code Inspection found {numberOfSuggestions} suggestions.");
             }
         }
     }
