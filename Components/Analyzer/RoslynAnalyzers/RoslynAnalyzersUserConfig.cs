@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
+using BuildSteps;
 
-namespace BuildSteps.RoslynAnalyzers
+namespace Components.Analyzer.RoslynAnalyzers
 {
     public class RoslynAnalyzersUserConfig : IBuildStepUserConfig
     {

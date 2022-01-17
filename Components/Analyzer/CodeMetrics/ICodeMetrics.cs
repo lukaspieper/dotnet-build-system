@@ -22,11 +22,12 @@ public interface ICodeMetrics : IAnalyzer<CodeMetricsUserConfig>, IHazBuildConfi
     Target CalculateMetrics => _ => _
         .DependsOn<ICopyStaticArtifacts>()
         .DependsOn<IRebuild>()
-        .DependsOn(PrepareAnalyzer)
         .OnlyWhenStatic(() => UserConfig.Enabled)
         .ProceedAfterFailure()
         .Executes(() =>
         {
+            CleanAnalyzerDirectories();
+            
             // Without the environmental variable CodeMetrics will not provide any results
             var outputLines = DotNetTasks.DotNet("--info", logOutput: false);
             var basePathOutput = outputLines.Single(line => line.Text.Contains("Base Path:")).Text;

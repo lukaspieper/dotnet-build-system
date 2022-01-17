@@ -1,6 +1,5 @@
 ﻿using System.Xml.Xsl;
 using BuildSteps;
-using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Components;
 using static Nuke.Common.IO.FileSystemTasks;
@@ -17,17 +16,14 @@ public interface IAnalyzer<T> : IHazReports, IHazCacheDirectory, IHazXsltDirecto
     protected AbsolutePath XmlReportFile => AnalyzerReportDirectory / $"{UserConfig.StepName}.xml";
     protected AbsolutePath HtmlReportFile => AnalyzerReportDirectory / $"{UserConfig.StepName}.html";
     protected AbsolutePath XsltFile { get; }
-    
-    protected Target PrepareAnalyzer => _ => _
-        .Unlisted()
-        .ProceedAfterFailure()
-        .Executes(() =>
-        {
-            // Cleaning the analyzer specific directory allows running a step on its own without deleting other results.
-            EnsureCleanDirectory(AnalyzerReportDirectory);
-            EnsureCleanDirectory(AnalyzerCacheDirectory);
-        });
-    
+
+    protected void CleanAnalyzerDirectories()
+    {
+        // Cleaning the analyzer specific directory allows running a step on its own without deleting other results.
+        EnsureCleanDirectory(AnalyzerReportDirectory);
+        EnsureCleanDirectory(AnalyzerCacheDirectory);
+    }
+
     protected void TransformXmlReportToHtmlReport(XsltArgumentList arguments = null)
     {
         TransformXml(XmlReportFile, XsltFile, HtmlReportFile, arguments);

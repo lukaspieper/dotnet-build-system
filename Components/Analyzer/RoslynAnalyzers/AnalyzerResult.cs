@@ -2,7 +2,7 @@
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
-namespace BuildSteps.RoslynAnalyzers
+namespace Components.Analyzer.RoslynAnalyzers
 {
     [XmlType]
     public class AnalyzerResult

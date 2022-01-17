@@ -9,7 +9,7 @@ namespace Components;
 
 public interface IRebuild : ICompile
 {
-    IReadOnlyCollection<Output> MsBuildOutput { set; }
+    IReadOnlyCollection<Output> MsBuildOutput { get; set; }
 
     new Target Compile => _ => _
         .DependsOn<IClean>()

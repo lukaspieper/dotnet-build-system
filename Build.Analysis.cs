@@ -1,33 +1,23 @@
 ﻿using BuildSteps;
 using Components;
 using Components.Analyzer.CodeMetrics;
+using Components.Analyzer.RoslynAnalyzers;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Components;
 
-public partial class Build : ICodeMetrics
+public partial class Build : ICodeMetrics, IRoslynAnalyzers
 {
     private Target CompileAndAnalyze => _ => _
         .Produces((this as IHazArtifacts).ArtifactsDirectory)
         .DependsOn<IRebuild>()
-        //.DependsOn(GetRoslynAnalyzersResults)
+        .DependsOn<IRoslynAnalyzers>()
         .DependsOn<ICodeMetrics>();
         //.DependsOn(RunReSharperInspection)
         //.DependsOn(FindDuplications)
         //.DependsOn(RunTestsWithCoverage);
 
-    /*private Target GetRoslynAnalyzersResults => _ => _
-        .DependsOn<IRebuild>()
-        .DependsOn<ICopyStaticArtifacts>()
-        .OnlyWhenStatic(() => BuildConfig.RoslynAnalyzersUserConfig.Enabled)
-        .ProceedAfterFailure()
-        .Executes(() =>
-        {
-            var stepConfig = CreateBuildStepConfig(BuildConfig.RoslynAnalyzersUserConfig, XsltDirectory / "TransformRoslynAnalyzersResults.xslt");
-            new RoslynAnalyzersStep(stepConfig, MsBuildOutput).Execute();
-        });
-
-    private Target RunReSharperInspection => _ => _
+    /*    private Target RunReSharperInspection => _ => _
         .DependsOn<ICopyStaticArtifacts>()
         .DependsOn<IRebuild>()
         .OnlyWhenStatic(() => BuildConfig.ReSharperInspectionUserConfig.Enabled)
