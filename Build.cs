@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Components;
+using Components.Analyzer;
 using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.Execution;
@@ -9,14 +10,14 @@ using Nuke.Components;
 
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
-partial class Build : NukeBuild, IRebuild, IClean, ICopyStaticArtifacts, IHazBuildConfig
+public class Build : NukeBuild, IClean, ICopyStaticArtifacts, IAllAnalyzer
 {
     public IReadOnlyCollection<Output> MsBuildOutput { get; set; }
     public BuildConfig BuildConfig { get; set; }
 
     public static int Main()
     {
-        return Execute<Build>(build => build.CompileAndAnalyze);
+        return Execute<Build>(build => (build as IAllAnalyzer).CompileAndAnalyze);
     }
 
     protected override void OnBuildCreated()

@@ -1,5 +1,4 @@
 ﻿using System.Xml.Xsl;
-using BuildSteps;
 using Nuke.Common.IO;
 using Nuke.Components;
 using static Nuke.Common.IO.FileSystemTasks;
@@ -7,7 +6,7 @@ using static Utilities.XmlTransformation;
 
 namespace Components.Analyzer;
 
-public interface IAnalyzer<T> : IHazReports, IHazCacheDirectory, IHazXsltDirectory where T : IBuildStepUserConfig
+public interface IAnalyzer<T> : IHazReports, IHazCacheDirectory, IHazXsltDirectory where T : IUserConfig
 {
     protected T UserConfig { get; }
 

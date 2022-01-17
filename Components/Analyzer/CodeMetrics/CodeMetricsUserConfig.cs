@@ -1,9 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using BuildSteps;
 
 namespace Components.Analyzer.CodeMetrics
 {
-    public class CodeMetricsUserConfig : IBuildStepUserConfig
+    public class CodeMetricsUserConfig : IUserConfig
     {
         [JsonIgnore]
         public string StepName => "CodeMetrics";

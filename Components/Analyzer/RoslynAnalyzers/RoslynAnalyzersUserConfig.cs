@@ -1,9 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using BuildSteps;
 
 namespace Components.Analyzer.RoslynAnalyzers
 {
-    public class RoslynAnalyzersUserConfig : IBuildStepUserConfig
+    public class RoslynAnalyzersUserConfig : IUserConfig
     {
         [JsonIgnore]
         public string StepName => "RoslynAnalyzers";
