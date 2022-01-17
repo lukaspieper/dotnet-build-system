@@ -13,12 +13,12 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
-    <PackageReference Include="Nuke.Common" Version="6.0.1" />
+    <PackageReference Include="Nuke.Components" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageDownload Include="JetBrains.dotCover.DotNetCliTool" Version="[2021.1.2]" />
-    <PackageDownload Include="JetBrains.resharper.globaltools" Version="[2021.1.2]" />
+    <PackageDownload Include="JetBrains.dotCover.DotNetCliTool" Version="[2021.3.2]" />
+    <PackageDownload Include="JetBrains.resharper.globaltools" Version="[2021.2.3]" />
     <PackageDownload Include="Microsoft.CodeAnalysis.Metrics" Version="[3.3.0]" />
   </ItemGroup>
 

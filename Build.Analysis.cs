@@ -5,18 +5,18 @@ using BuildSteps.DotCover;
 using BuildSteps.JetBrainsDupFinder;
 using BuildSteps.ReSharperInspection;
 using BuildSteps.RoslynAnalyzers;
+using Components;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
+using Nuke.Components;
 
 public partial class Build
 {
-    IReadOnlyCollection<Output> MsBuildOutput;
-
     private Target CompileAndAnalyze => _ => _
-        .Produces(ArtifactsDirectory)
-        .DependsOn(Compile)
+        .Produces((this as IHazArtifacts).ArtifactsDirectory)
+        .DependsOn<IRebuild>()
         .DependsOn(GetRoslynAnalyzersResults)
         .DependsOn(CalculateMetrics)
         .DependsOn(RunReSharperInspection)
@@ -24,8 +24,8 @@ public partial class Build
         .DependsOn(RunTestsWithCoverage);
 
     private Target GetRoslynAnalyzersResults => _ => _
-        .DependsOn(Compile)
-        .DependsOn(CopyStaticArtifacts)
+        .DependsOn<IRebuild>()
+        .DependsOn<ICopyStaticArtifacts>()
         .OnlyWhenStatic(() => BuildConfig.RoslynAnalyzersUserConfig.Enabled)
         .ProceedAfterFailure()
         .Executes(() =>
@@ -35,8 +35,8 @@ public partial class Build
         });
 
     private Target CalculateMetrics => _ => _
-        .DependsOn(CopyStaticArtifacts)
-        .After(Compile)
+        .DependsOn<ICopyStaticArtifacts>()
+        .DependsOn<IRebuild>()
         .OnlyWhenStatic(() => BuildConfig.CodeMetricsUserConfig.Enabled)
         .ProceedAfterFailure()
         .Executes(() =>
@@ -46,8 +46,8 @@ public partial class Build
         });
 
     private Target RunReSharperInspection => _ => _
-        .DependsOn(CopyStaticArtifacts)
-        .After(Compile)
+        .DependsOn<ICopyStaticArtifacts>()
+        .DependsOn<IRebuild>()
         .OnlyWhenStatic(() => BuildConfig.ReSharperInspectionUserConfig.Enabled)
         .Executes(() =>
         {
@@ -56,8 +56,8 @@ public partial class Build
         });
 
     private Target FindDuplications => _ => _
-        .DependsOn(CopyStaticArtifacts)
-        .After(Compile)
+        .DependsOn<ICopyStaticArtifacts>()
+        .DependsOn<IRebuild>()
         .OnlyWhenStatic(() => BuildConfig.JetBrainsDupFinderUserConfig.Enabled)
         .Executes(() =>
         {
@@ -66,18 +66,18 @@ public partial class Build
         });
 
     private Target RunTestsWithCoverage => _ => _
-        .DependsOn(CopyStaticArtifacts)
-        .After(Compile)
+        .DependsOn<ICopyStaticArtifacts>()
+        .DependsOn<IRebuild>()
         .OnlyWhenStatic(() => BuildConfig.DotCoverUserConfig.Enabled)
         .ProceedAfterFailure()
         .Executes(() =>
         {
             var stepConfig = CreateBuildStepConfig(BuildConfig.DotCoverUserConfig, XsltDirectory / "TransformTrx.xslt");
-            new DotCoverStep(stepConfig, InvokedTargets.Contains(Restore), InvokedTargets.Contains(Compile)).Execute();
+            new DotCoverStep(stepConfig, InvokedTargets.Contains((this as IRestore).Restore), InvokedTargets.Contains((this as IRebuild).Compile)).Execute();
         });
 
     private BuildStepConfig<T> CreateBuildStepConfig<T>(T userConfig, AbsolutePath xsltFile = null) where T : IBuildStepUserConfig
     {
-        return new BuildStepConfig<T>(userConfig, Solution, ArtifactsDirectory, CacheDirectory, xsltFile);
+        return new BuildStepConfig<T>(userConfig, (this as IHazSolution).Solution, (this as IHazArtifacts).ArtifactsDirectory, (this as IHazCacheDirectory).CacheDirectory, xsltFile);
     }
 }

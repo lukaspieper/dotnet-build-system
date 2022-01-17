@@ -4,6 +4,7 @@ using System.Text.Json;
 using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.IO;
+using Nuke.Components;
 
 public partial class Build
 {
@@ -15,7 +16,7 @@ public partial class Build
         {
             var processStartInfo = new ProcessStartInfo
             {
-                FileName = ArtifactsDirectory / "Analysis.html",
+                FileName = (this as IHazArtifacts).ArtifactsDirectory / "Analysis.html",
                 UseShellExecute = true,
             };
 
