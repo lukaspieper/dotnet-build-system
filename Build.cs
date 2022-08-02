@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Components;
@@ -6,9 +7,10 @@ using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.Execution;
 using Nuke.Common.Tooling;
+using Nuke.Common.Utilities;
+using Nuke.Common.Utilities.Collections;
 using Nuke.Components;
 
-[CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
 public class Build : NukeBuild, IClean, ICopyStaticArtifacts, IAllAnalyzer
 {
@@ -23,6 +25,25 @@ public class Build : NukeBuild, IClean, ICopyStaticArtifacts, IAllAnalyzer
     protected override void OnBuildCreated()
     {
         (this as IHazBuildConfig).OnBuildCreated();
+    }
+
+    protected override void WriteLogo()
+    {
+        new[]
+        {
+            "",
+            "██████╗ ██╗  ██████╗ ██╗  ███████╗",
+            "██╔══██╗╚██╗ ██╔══██╗╚██╗ ██╔════╝",
+            "██║  ██║ ╚██╗██████╔╝ ╚██╗███████╗",
+            "██║  ██║ ██╔╝██╔══██╗ ██╔╝╚════██║",
+            "██████╔╝██╔╝ ██████╔╝██╔╝ ███████║",
+            "╚═════╝ ╚═╝  ╚═════╝ ╚═╝  ╚══════╝",
+            ""
+        }.ForEach(x => Console.WriteLine(x.Replace(" ", " ")));
+
+        Console.WriteLine($"NUKE Execution Engine {typeof(NukeBuild).Assembly.GetInformationalText()}");
+        Console.WriteLine($"dotnet-build-system   {typeof(Build).Assembly.GetInformationalText()}");
+        Console.WriteLine();
     }
 
     [UsedImplicitly]
